@@ -5,7 +5,6 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CStatusComponent.h"
 #include "Components/COptionComponent.h"
-#include "Components/CStateComponent.h"
 #include "Components/CMontagesComponent.h"
 
 ACPlayer::ACPlayer()
@@ -51,7 +50,7 @@ void ACPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	
+	State->OnStateTypeChanged.AddDynamic(this, &ACPlayer::OnStateTypeChanged);
 }
 
 void ACPlayer::Tick(float DeltaTime)
@@ -74,6 +73,7 @@ void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	//Action Event
 	PlayerInputComponent->BindAction("Walk", EInputEvent::IE_Pressed, this, &ACPlayer::OnWalk);
 	PlayerInputComponent->BindAction("Walk", EInputEvent::IE_Released, this, &ACPlayer::OffWalk);
+	PlayerInputComponent->BindAction("Evade", EInputEvent::IE_Pressed, this, &ACPlayer::OnEvade);
 }
 
 void ACPlayer::OnMoveForward(float InAxis)
@@ -126,4 +126,59 @@ void ACPlayer::OnWalk()
 void ACPlayer::OffWalk()
 {
 	GetCharacterMovement()->MaxWalkSpeed = Status->GetRunSpeed();
+}
+
+void ACPlayer::OnEvade()
+{
+	CheckFalse(State->IsIdleMode());
+
+	if (InputComponent->GetAxisValue("MoveForward") < 0)
+	{
+		State->SetBackStepMode();
+		return;
+	}
+
+	State->SetRollMode();
+}
+
+void ACPlayer::Begin_Roll()
+{
+	bUseControllerRotationYaw = false;
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+
+	FVector start = GetActorLocation();
+	FVector target = start + GetVelocity().GetSafeNormal2D();
+	SetActorRotation(UKismetMathLibrary::FindLookAtRotation(start, target));
+
+	Montages->PlayRoll();
+}
+
+void ACPlayer::Begin_BackStep()
+{
+	bUseControllerRotationYaw = true;
+	GetCharacterMovement()->bOrientRotationToMovement = false;
+
+	Montages->PlayBackStep();
+}
+
+void ACPlayer::End_Roll()
+{
+	State->SetIdleMode();
+}
+
+void ACPlayer::End_BackStep()
+{
+	bUseControllerRotationYaw = false;
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+
+	State->SetIdleMode();
+}
+
+void ACPlayer::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType)
+{
+	switch (InNewType)
+	{
+		case EStateType::Roll:		Begin_Roll();		break;
+		case EStateType::BackStep:	Begin_BackStep();	break;
+	}
 }

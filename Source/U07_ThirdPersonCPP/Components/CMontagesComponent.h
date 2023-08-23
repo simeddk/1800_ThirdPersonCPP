@@ -6,6 +6,9 @@
 #include "CStateComponent.h"
 #include "CMontagesComponent.generated.h"
 
+//-----------------------------------------------------------------------------
+// Struct - MontageData(DataTable RowBase)
+//-----------------------------------------------------------------------------
 USTRUCT(BlueprintType)
 struct FMontageData : public FTableRowBase
 {
@@ -28,7 +31,9 @@ public:
 		bool bCanMove;
 };
 
-
+//-----------------------------------------------------------------------------
+// Class - MontagesComponent
+//-----------------------------------------------------------------------------
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class U07_THIRDPERSONCPP_API UCMontagesComponent : public UActorComponent
 {
@@ -40,10 +45,17 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+public:
+	void PlayRoll();
+	void PlayBackStep();
+
+private:
+	void PlayAnimMontage(EStateType InStateType);
+
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "DataTable")
 		UDataTable* DataTable;
 		
 private:
-	TArray<FMontageData*> MontageDatas;
+	FMontageData* Datas[(int32)EStateType::Max];
 };

@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Components/CStateComponent.h"
 #include "CPlayer.generated.h"
 
 UCLASS()
@@ -29,6 +30,19 @@ private: //Axis Event
 private: //Action Event
 	void OnWalk();
 	void OffWalk();
+	void OnEvade();
+
+private:
+	void Begin_Roll();
+	void Begin_BackStep();
+	
+public:
+	void End_Roll();
+	void End_BackStep();
+
+private:
+	UFUNCTION()
+		void OnStateTypeChanged(EStateType InPrevType, EStateType InNewType);
 
 
 private: //Scene Component
