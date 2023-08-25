@@ -17,11 +17,11 @@ ACPlayer::ACPlayer()
 	CHelpers::CreateSceneComponent(this, &Camera, "Camera", SpringArm);
 
 	//Create Actor Component
+	CHelpers::CreateActorComponent(this, &Action, "Action");
+	CHelpers::CreateActorComponent(this, &Montages, "Montages");
 	CHelpers::CreateActorComponent(this, &Status, "Status");
 	CHelpers::CreateActorComponent(this, &Option, "Option");
 	CHelpers::CreateActorComponent(this, &State, "State");
-	CHelpers::CreateActorComponent(this, &Montages, "Montages");
-	CHelpers::CreateActorComponent(this, &Action, "Action");
 
 	//Component Settings
 	//-> SkelMesh
@@ -53,6 +53,8 @@ void ACPlayer::BeginPlay()
 	Super::BeginPlay();
 	
 	State->OnStateTypeChanged.AddDynamic(this, &ACPlayer::OnStateTypeChanged);
+
+	Action->SetUnarmedMode();
 }
 
 void ACPlayer::Tick(float DeltaTime)
