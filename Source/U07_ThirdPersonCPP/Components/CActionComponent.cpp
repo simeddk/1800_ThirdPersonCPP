@@ -72,9 +72,15 @@ void UCActionComponent::SetMode(EActionType InNewType)
 		return;
 	}
 
-	//Todo. 2828
-	//Fist -> OneHand (다른 무기 간에 교체)
-	//??????
+	//Unaremd 가 아닌 Type을 장착하고 있었다면
+	else if (IsUnarmedMode() == false)
+	{
+		if (!!Datas[(int32)Type] && !!Datas[(int32)Type]->GetEquipment())
+			Datas[(int32)Type]->GetEquipment()->Unequip();
+	}
+
+	if (!!Datas[(int32)InNewType] && !!Datas[(int32)InNewType]->GetEquipment())
+		Datas[(int32)InNewType]->GetEquipment()->Equip();
 
 	ChangeType(InNewType);
 }

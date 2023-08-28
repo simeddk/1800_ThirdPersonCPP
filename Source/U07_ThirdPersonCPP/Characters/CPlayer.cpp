@@ -3,10 +3,12 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Materials/MaterialInstanceDynamic.h"
 #include "Components/CStatusComponent.h"
 #include "Components/COptionComponent.h"
 #include "Components/CMontagesComponent.h"
 #include "Components/CActionComponent.h"
+#include "Actions/CActionData.h"
 
 ACPlayer::ACPlayer()
 {
@@ -52,6 +54,9 @@ void ACPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	BodyMaterial = UMaterialInstanceDynamic::Create(GetMesh()->GetMaterial(0), nullptr);
+	GetMesh()->SetMaterial(0, BodyMaterial);
+
 	State->OnStateTypeChanged.AddDynamic(this, &ACPlayer::OnStateTypeChanged);
 
 	Action->SetUnarmedMode();
@@ -199,13 +204,26 @@ void ACPlayer::Begin_BackStep()
 
 void ACPlayer::End_Roll()
 {
+	CheckNull(Action->GetCurrentData());
+
+	if (Action->GetCurrentData()->EquipmentData.bPawnControl == true)
+	{
+		bUseControllerRotationYaw = true;
+		GetCharacterMovement()->bOrientRotationToMovement = false;
+	}
+
 	State->SetIdleMode();
 }
 
 void ACPlayer::End_BackStep()
 {
-	bUseControllerRotationYaw = false;
-	GetCharacterMovement()->bOrientRotationToMovement = true;
+	CheckNull(Action->GetCurrentData());
+
+	if (Action->GetCurrentData()->EquipmentData.bPawnControl == false)
+	{
+		bUseControllerRotationYaw = false;
+		GetCharacterMovement()->bOrientRotationToMovement = true;
+	}
 
 	State->SetIdleMode();
 }
@@ -217,4 +235,9 @@ void ACPlayer::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType)
 		case EStateType::Roll:		Begin_Roll();		break;
 		case EStateType::BackStep:	Begin_BackStep();	break;
 	}
+}
+
+void ACPlayer::ChangeBodyColor(FLinearColor InColor)
+{
+	BodyMaterial->SetVectorParameterValue("BodyColor", InColor);
 }
