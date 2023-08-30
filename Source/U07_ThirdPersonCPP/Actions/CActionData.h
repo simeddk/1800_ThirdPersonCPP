@@ -67,6 +67,8 @@ public:
 
 public:
 	FORCEINLINE class ACEquipment* GetEquipment() { return Equipment; }
+	FORCEINLINE class ACAttachment* GetAttachment() { return Attachment; }
+	FORCEINLINE class ACDoAction* GetDoAction() { return DoAction; }
 
 private:
 	FString GetCustomActorLabel(class ACharacter* InOwnerCharacter, FString InMiddleName);

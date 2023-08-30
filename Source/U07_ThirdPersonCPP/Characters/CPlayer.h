@@ -40,6 +40,8 @@ private: //Action Event
 	void OnTwoHand();
 	void OnMagicBall();
 
+	void OnAction();
+
 private:
 	void Begin_Roll();
 	void Begin_BackStep();

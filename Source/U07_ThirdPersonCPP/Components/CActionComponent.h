@@ -57,6 +57,9 @@ public: //SetAction
 	void SetWarpMode();
 	void SetStormMode();
 
+public:
+	void DoAction();
+
 private:
 	void SetMode(EActionType InNewType);
 	void ChangeType(EActionType InNewType);
