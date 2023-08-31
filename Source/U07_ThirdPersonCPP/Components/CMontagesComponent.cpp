@@ -28,7 +28,7 @@ void UCMontagesComponent::BeginPlay()
 			{
 				Datas[i] = data;
 
-				continue;
+				break;
 			}
 		}
 	}
