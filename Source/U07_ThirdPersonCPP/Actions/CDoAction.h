@@ -26,6 +26,13 @@ public:
 	virtual void Begin_DoAction() {}
 	virtual void End_DoAction() {}
 
+public:
+	UFUNCTION()
+		virtual void OnBeginOverlap(class ACharacter* InAttacker, class AActor* InCauser, class ACharacter* InOtherCharacter) {}
+
+	UFUNCTION()
+		virtual void OnEndOverlap(class ACharacter* InAttacker, class AActor* InCauser, class ACharacter* InOtherCharacter) {}
+
 protected:
 	UPROPERTY(BlueprintReadOnly)
 		class ACharacter* OwnerCharacter;

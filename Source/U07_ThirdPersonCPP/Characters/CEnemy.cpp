@@ -5,7 +5,6 @@
 #include "Components/WidgetComponent.h"
 #include "Components/CActionComponent.h"
 #include "Components/CMontagesComponent.h"
-#include "Components/CStateComponent.h"
 #include "Components/CStatusComponent.h"
 #include "Widgets/CNameWidget.h"
 #include "Widgets/CHealthWidget.h"
@@ -43,8 +42,8 @@ ACEnemy::ACEnemy()
 	TSubclassOf<UCNameWidget> nameWidgetClass;
 	CHelpers::GetClass(&nameWidgetClass, "/Game/Widgets/WB_Name");
 	NameWidget->SetWidgetClass(nameWidgetClass);
-	NameWidget->SetRelativeLocation(FVector(0, 0, 200)); //Todo. Size ¼öÁ¤
-	NameWidget->SetDrawSize(FVector2D(240, 30));
+	NameWidget->SetRelativeLocation(FVector(0, 0, 220));
+	NameWidget->SetDrawSize(FVector2D(240, 50));
 	NameWidget->SetWidgetSpace(EWidgetSpace::Screen);
 
 	TSubclassOf<UCHealthWidget> healthWidgetClass;
@@ -62,6 +61,8 @@ void ACEnemy::BeginPlay()
 	UpperMaterial = UMaterialInstanceDynamic::Create(GetMesh()->GetMaterial(1), nullptr);
 	GetMesh()->SetMaterial(0, LowerMaterial);
 	GetMesh()->SetMaterial(1, UpperMaterial);
+
+	State->OnStateTypeChanged.AddDynamic(this, &ACEnemy::OnStateTypeChanged);
 
 	Super::BeginPlay();
 
@@ -81,9 +82,46 @@ void ACEnemy::BeginPlay()
 	}
 }
 
+float ACEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	DamageValue = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+	Attacker = Cast<ACharacter>(EventInstigator->GetPawn());
+	Causer = DamageCauser;
+
+	Status->DecreaseHealth(DamageValue);
+
+	if (Status->IsDead())
+	{
+		State->SetDeadMode();
+		return;
+	}
+
+	State->SetHittedMode();
+
+	return DamageValue;
+}
+
 void ACEnemy::ChangeBodyColor(FLinearColor InColor)
 {
 	LowerMaterial->SetVectorParameterValue("Emissive", InColor);
 	UpperMaterial->SetVectorParameterValue("Emissive", InColor);
 }
+//Todo. 414141.....
+void ACEnemy::Hitted()
+{
+	CLog::Print("¸ÂÀ½");
+}
 
+void ACEnemy::Dead()
+{
+	CLog::Print("²¥¾Ç!!!!");
+}
+
+void ACEnemy::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType)
+{
+	switch (InNewType)
+	{
+		case EStateType::Hitted:	Hitted();	break;
+		case EStateType::Dead:		Dead();		break;
+	}
+}
