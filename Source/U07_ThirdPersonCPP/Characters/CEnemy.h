@@ -23,6 +23,9 @@ public:
 public:
 	virtual void ChangeBodyColor(FLinearColor InColor);
 
+	UFUNCTION()
+		void RestoreColor();
+
 private:
 	void Hitted();
 	void Dead();
@@ -50,6 +53,10 @@ private: //Actor Component
 
 	UPROPERTY(VisibleDefaultsOnly)
 		class UCStatusComponent* Status;
+
+private:
+	UPROPERTY(EditAnywhere)
+		float LaunchValue = 25.f;
 
 private:
 	class UMaterialInstanceDynamic* UpperMaterial;

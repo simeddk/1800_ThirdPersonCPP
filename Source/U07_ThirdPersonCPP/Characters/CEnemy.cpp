@@ -3,6 +3,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Components/WidgetComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/CActionComponent.h"
 #include "Components/CMontagesComponent.h"
 #include "Components/CStatusComponent.h"
@@ -93,7 +94,7 @@ float ACEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AContro
 	if (Status->IsDead())
 	{
 		State->SetDeadMode();
-		return;
+		return DamageValue;
 	}
 
 	State->SetHittedMode();
@@ -103,18 +104,72 @@ float ACEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AContro
 
 void ACEnemy::ChangeBodyColor(FLinearColor InColor)
 {
+	if (State->IsHittedMode())
+	{
+		LowerMaterial->SetVectorParameterValue("BodyColor", InColor);
+		UpperMaterial->SetVectorParameterValue("BodyColor", InColor);
+
+		return;
+	}
+
 	LowerMaterial->SetVectorParameterValue("Emissive", InColor);
 	UpperMaterial->SetVectorParameterValue("Emissive", InColor);
 }
-//Todo. 414141.....
+
+void ACEnemy::RestoreColor()
+{
+	LowerMaterial->SetVectorParameterValue("BodyColor", FLinearColor::Black);
+	UpperMaterial->SetVectorParameterValue("BodyColor", FLinearColor::Black);
+}
+
 void ACEnemy::Hitted()
 {
-	CLog::Print("¸ÂÀ½");
+	//Apply Health Widget
+	UCHealthWidget* healthWidget = Cast<UCHealthWidget>(HealthWidget->GetUserWidgetObject());
+	if (!!healthWidget)
+	{
+		healthWidget->UpdateHealth(Status->GetCurrentHealth(), Status->GetMaxHealth());
+	}
+
+	//Play Hitted Montage
+	Montages->PlayHitted();
+
+	//Look At Attacker
+	FVector start = GetActorLocation();
+	FVector target = Attacker->GetActorLocation();
+	FRotator rotation = FRotator(0, UKismetMathLibrary::FindLookAtRotation(start, target).Yaw, 0);
+	SetActorRotation(rotation);
+
+	//HitBack
+	FVector direction = (start - target).GetSafeNormal();
+	LaunchCharacter(direction * LaunchValue * DamageValue, true, false);
+
+	//Change Hit Color
+	ChangeBodyColor(FLinearColor::Red);
+
+	UKismetSystemLibrary::K2_SetTimer(this, "RestoreColor", 0.5f, false);
 }
 
 void ACEnemy::Dead()
 {
-	CLog::Print("²¥¾Ç!!!!");
+	//Widget Visibility Disable
+	NameWidget->SetVisibility(false);
+	HealthWidget->SetVisibility(false);
+
+	//Ragdoll
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->GlobalAnimRateScale = 0.f;
+
+	//Add Force
+	FVector start = GetActorLocation();
+	FVector target = Attacker->GetActorLocation();
+	FVector direction = (start - target).GetSafeNormal();
+	FVector force = direction * LaunchValue * DamageValue;
+	GetMesh()->AddForceAtLocation(force, start);
+
+	//Todo. Destroy All(Attachemnt, Equipment, DoAction.....)
 }
 
 void ACEnemy::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType)
