@@ -22,6 +22,10 @@ public:
 	FORCEINLINE void ClearHittedCharacters() { HittedCharacters.Empty(); }
 
 private:
+	UFUNCTION()
+		void RestoreTimeDilation();
+
+private:
 	int32 ComboCount;
 	bool bCanCombo;
 	bool bSucceed;

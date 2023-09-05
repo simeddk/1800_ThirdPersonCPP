@@ -2,6 +2,7 @@
 #include "Global.h"
 #include "GameFramework/Character.h"
 #include "Actions/CActionData.h"
+#include "Actions/CActionData_Spawned.h"
 #include "Actions/CEquipment.h"
 #include "Actions/CDoAction.h"
 
@@ -18,8 +19,8 @@ void UCActionComponent::BeginPlay()
 	ACharacter* ownerCharacter = Cast<ACharacter>(GetOwner());
 	for (int32 i = 0; i < (int32)EActionType::Max; i++)
 	{
-		if (!!Datas[i])
-			Datas[i]->BeginPlay(ownerCharacter);
+		if (!!DataAssets[i])
+			DataAssets[i]->BeginPlay(ownerCharacter, &Datas[i]);
 	}
 }
 

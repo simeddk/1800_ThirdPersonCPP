@@ -57,11 +57,21 @@ void ACDoAction_Melee::OnBeginOverlap(ACharacter* InAttacker, AActor* InCauser, 
 {
 	Super::OnBeginOverlap(InAttacker, InCauser, InOtherCharacter);
 
+	//Register HittedCharacters
 	int32 hittedCharactersNum = HittedCharacters.Num();
 	HittedCharacters.AddUnique(InOtherCharacter);
 
 	CheckFalse(hittedCharactersNum < HittedCharacters.Num());
 
+	//HitStop
+	float hitStop = Datas[ComboCount].HitStop;
+	if (FMath::IsNearlyZero(hitStop) == false)
+	{
+		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 2e-2f);
+		UKismetSystemLibrary::K2_SetTimer(this, "RestoreTimeDilation", 2e-2f * hitStop, false);
+	}
+
+	//Take Damage
 	FDamageEvent damageEvent;
 	InOtherCharacter->TakeDamage(Datas[ComboCount].Power, damageEvent, InAttacker->GetController(), InCauser);
 }
@@ -70,3 +80,9 @@ void ACDoAction_Melee::OnEndOverlap(ACharacter* InAttacker, AActor* InCauser, AC
 {
 	Super::OnEndOverlap(InAttacker, InCauser, InOtherCharacter);
 }
+
+void ACDoAction_Melee::RestoreTimeDilation()
+{
+	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.f);
+}
+//Todo. 빌드 다시 해야 함....

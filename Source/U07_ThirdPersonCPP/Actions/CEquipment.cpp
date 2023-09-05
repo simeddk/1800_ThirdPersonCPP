@@ -25,6 +25,9 @@ void ACEquipment::Equip_Implementation()
 	//Set State Equip
 	StateComp->SetEquipMode();
 
+	//bCanMove
+	Data.bCanMove ? StatusComp->SetMove() : StatusComp->SetStop();
+
 	//Play Draw AnimMontage
 	if (!!Data.AnimMontage)
 		OwnerCharacter->PlayAnimMontage(Data.AnimMontage, Data.PlayRate, Data.StartSection);
@@ -40,9 +43,6 @@ void ACEquipment::Equip_Implementation()
 		OwnerCharacter->bUseControllerRotationYaw = true;
 		OwnerCharacter->GetCharacterMovement()->bOrientRotationToMovement = false;
 	}
-
-	//bCanMove
-	Data.bCanMove ? StatusComp->SetMove() : StatusComp->SetStop();
 
 	//Change Color
 	IICharacter* characterInterface = Cast<IICharacter>(OwnerCharacter);

@@ -18,7 +18,7 @@ void UCAnimNotifyState_Combo::NotifyBegin(USkeletalMeshComponent* MeshComp, UAni
 	UCActionComponent* actionComp = CHelpers::GetComponent<UCActionComponent>(MeshComp->GetOwner());
 	CheckNull(actionComp);
 
-	UCActionData* currData = actionComp->GetCurrentData();
+	UCActionData_Spawned* currData = actionComp->GetCurrentData();
 	CheckNull(currData);
 
 	ACDoAction_Melee* doAction_melee = Cast<ACDoAction_Melee>(currData->GetDoAction());
@@ -35,7 +35,7 @@ void UCAnimNotifyState_Combo::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimS
 	UCActionComponent* actionComp = CHelpers::GetComponent<UCActionComponent>(MeshComp->GetOwner());
 	CheckNull(actionComp);
 
-	UCActionData* currData = actionComp->GetCurrentData();
+	UCActionData_Spawned* currData = actionComp->GetCurrentData();
 	CheckNull(currData);
 
 	ACDoAction_Melee* doAction_melee = Cast<ACDoAction_Melee>(currData->GetDoAction());
