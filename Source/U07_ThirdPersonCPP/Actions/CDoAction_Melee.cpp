@@ -71,6 +71,24 @@ void ACDoAction_Melee::OnBeginOverlap(ACharacter* InAttacker, AActor* InCauser, 
 		UKismetSystemLibrary::K2_SetTimer(this, "RestoreTimeDilation", 2e-2f * hitStop, false);
 	}
 
+	TSubclassOf<UCameraShake> shakeClass = Datas[ComboCount].ShakeClass;
+	if (!!shakeClass)
+	{
+		APlayerController* controller = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+		if (!!controller)
+			controller->PlayerCameraManager->PlayCameraShake(shakeClass);
+	}
+
+	//Play Particle
+	UParticleSystem* effect = Datas[ComboCount].Effect;
+	if (!!effect)
+	{
+		FTransform transform = Datas[ComboCount].EffectTransform;
+		transform.AddToTranslation(InOtherCharacter->GetActorLocation());
+
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), effect, transform);
+	}
+
 	//Take Damage
 	FDamageEvent damageEvent;
 	InOtherCharacter->TakeDamage(Datas[ComboCount].Power, damageEvent, InAttacker->GetController(), InCauser);
@@ -85,4 +103,4 @@ void ACDoAction_Melee::RestoreTimeDilation()
 {
 	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.f);
 }
-//Todo. 빌드 다시 해야 함....
+

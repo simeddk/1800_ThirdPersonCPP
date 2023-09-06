@@ -5,6 +5,7 @@
 #include "Actions/CActionData_Spawned.h"
 #include "Actions/CEquipment.h"
 #include "Actions/CDoAction.h"
+#include "Actions/CAttachment.h"
 
 UCActionComponent::UCActionComponent()
 {
@@ -75,6 +76,20 @@ void UCActionComponent::DoAction()
 		if (!!doAction)
 			doAction->DoAction();
 
+	}
+}
+
+void UCActionComponent::OffAllCollisions()
+{
+	for (const auto& data : Datas)
+	{
+		if (data == nullptr)
+			continue;
+
+		if (data->GetAttachment() == nullptr)
+			continue;
+
+		data->GetAttachment()->OffCollisions();
 	}
 }
 
