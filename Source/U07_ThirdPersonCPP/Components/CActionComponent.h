@@ -62,6 +62,7 @@ public: //SetAction
 
 public:
 	void DoAction();
+	void DoAim(bool InPressed);
 
 	void OffAllCollisions();
 
