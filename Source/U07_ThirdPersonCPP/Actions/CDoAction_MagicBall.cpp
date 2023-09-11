@@ -12,6 +12,9 @@ void ACDoAction_MagicBall::BeginPlay()
 
 	Aim = NewObject<UCAim>();
 	Aim->BeginPlay(OwnerCharacter);
+
+	ActionComp = CHelpers::GetComponent<UCActionComponent>(OwnerCharacter);
+	ActionComp->OnActionTypeChanged.AddDynamic(this, &ACDoAction_MagicBall::AbortByTypeChanged);
 }
 
 void ACDoAction_MagicBall::Tick(float DeltaTime)
@@ -39,13 +42,16 @@ void ACDoAction_MagicBall::Begin_DoAction()
 {
 	CheckNull(Datas[0].ProjectileClass);
 
-	FVector handSocketLocation = OwnerCharacter->GetMesh()->GetSocketLocation("hand_r");
-	//OwnerCharacter->GetController()->GetPlayerViewPoint(,);
-	//Todo. 카메라위치, 카메라회전
+	FVector location;
+	FRotator rotation;
+	OwnerCharacter->GetController()->GetPlayerViewPoint(location, rotation);
 
+	FVector handSocketLocation = OwnerCharacter->GetMesh()->GetSocketLocation("hand_r");
+	FVector cameraDirection = rotation.Vector();
+	location += cameraDirection * ((handSocketLocation - location) | cameraDirection);
 
 	FTransform transmform = Datas[0].EffectTransform;
-	transmform.AddToTranslation(handSocketLocation);
+	transmform.AddToTranslation(location);
 	transmform.SetRotation(FQuat(OwnerCharacter->GetControlRotation()));
 
 	ACMagicBall* magicBall = GetWorld()->SpawnActorDeferred<ACMagicBall>
@@ -57,9 +63,9 @@ void ACDoAction_MagicBall::Begin_DoAction()
 			ESpawnActorCollisionHandlingMethod::AlwaysSpawn
 		);
 
-	//Todo. 뭔가 넣을 것이다.
-
+	magicBall->OnBeginOverlap.AddDynamic(this, &ACDoAction_MagicBall::OnMagicBallBeginOverlap);
 	magicBall->FinishSpawning(transmform);
+
 }
 
 void ACDoAction_MagicBall::End_DoAction()
@@ -79,5 +85,24 @@ void ACDoAction_MagicBall::OffAim()
 {
 	CheckNull(Aim);
 
+	Aim->Off();
+}
+
+void ACDoAction_MagicBall::OnMagicBallBeginOverlap(FHitResult hitResult)
+{
+	FDamageEvent damageEvent;
+	hitResult.Actor->TakeDamage
+	(
+		Datas[0].Power,
+		damageEvent,
+		OwnerCharacter->GetController(),
+		this
+	);
+}
+
+void ACDoAction_MagicBall::AbortByTypeChanged(EActionType InPrevType, EActionType InNewType)
+{
+	CheckFalse(Aim->IsAvailable());
+	CheckFalse(Aim->IsZooming());
 	Aim->Off();
 }

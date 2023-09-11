@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Actions/CDoAction.h"
+#include "Components/CActionComponent.h"
 #include "CDoAction_MagicBall.generated.h"
 
 UCLASS()
@@ -23,8 +24,16 @@ public:
 	virtual void OnAim() override;
 	virtual void OffAim() override;
 
+private:
+	UFUNCTION()
+		void OnMagicBallBeginOverlap(FHitResult hitResult);
+
+	UFUNCTION()
+		void AbortByTypeChanged(EActionType InPrevType, EActionType InNewType);
 
 private:
 	UPROPERTY()
 		class UCAim* Aim;
+
+	UCActionComponent* ActionComp;
 };
