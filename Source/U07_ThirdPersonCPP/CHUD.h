@@ -18,6 +18,10 @@ protected:
 public:
 	virtual void DrawHUD() override;
 
+public:
+	FORCEINLINE void EnableAim() { bVisibleAim = true; }
+	FORCEINLINE void DisableAim() { bVisibleAim = false; }
+
 private:
 	UPROPERTY(EditDefaultsOnly)
 		class UTexture2D* CrosshairTex;
@@ -25,4 +29,6 @@ private:
 private:
 	class UCStateComponent* StateComp;
 	UEnum* StateTypeEnum;
+
+	bool bVisibleAim;
 };

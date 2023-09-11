@@ -18,6 +18,7 @@ public:
 
 public:
 	FORCEINLINE bool IsAvailable() { return SpringArm != nullptr && Camera != nullptr; }
+	FORCEINLINE bool IsZooming() { return bZooming; }
 
 	void On();
 	void Off();
@@ -36,4 +37,6 @@ private:
 	class UCurveFloat* Curve;
 	FTimeline Timeline;
 	FOnTimelineFloat OnTimeline;
+
+	class ACHUD* HUD;
 };

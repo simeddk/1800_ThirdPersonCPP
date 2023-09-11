@@ -32,6 +32,7 @@ void ACHUD::DrawHUD()
 	DrawText(typeStr, FLinearColor::Red, 10, Canvas->ClipY - 50, nullptr, 1.5f);
 
 	//Draw Aim
+	CheckFalse(bVisibleAim);
 	const FVector2D Center(Canvas->ClipX * 0.5f, Canvas->ClipY * 0.5f);
 
 	const FVector2D CrosshairDrawPosition((Center.X - (CrosshairTex->GetSurfaceWidth() * 0.5)),
@@ -40,5 +41,4 @@ void ACHUD::DrawHUD()
 	FCanvasTileItem TileItem(CrosshairDrawPosition, CrosshairTex->Resource, FLinearColor::White);
 	TileItem.BlendMode = SE_BLEND_Translucent;
 	Canvas->DrawItem(TileItem);
-	//Todo. Aim 했을 때만 CrosshairTex 보이기
 }
