@@ -3,20 +3,52 @@
 #include "GameFramework/Character.h"
 #include "Components/CStateComponent.h"
 #include "Components/CStatusComponent.h"
+#include "CAttachment.h"
 
 void ACDoAction_Warp::BeginPlay()
 {
-	Super::BeginPlay(); 
+	Super::BeginPlay();
+
+	for (AActor* child : OwnerCharacter->Children)
+	{
+		if (child->IsA<ACAttachment>() && child->GetActorLabel().Contains("Warp"))
+		{
+			WarpPoint = CHelpers::GetComponent<UStaticMeshComponent>(child);
+			break;
+		}
+	}
+}
+
+void ACDoAction_Warp::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	CheckFalse(*bEquippedThis);
+
+	FVector location;
+	FRotator rotation;
+	if (GetCursorLocationAndRotation(location, rotation))
+	{
+		WarpPoint->SetVisibility(true);
+
+		WarpPoint->SetWorldLocation(location + FVector(0, 0, 120));
+		WarpPoint->SetWorldRotation(rotation);
+	}
+	else
+	{
+		WarpPoint->SetVisibility(false);
+	}
 }
 
 void ACDoAction_Warp::DoAction()
 {
 	Super::DoAction();
 
-	//Todo. DA에서 DoActionClass를 잘못 넣었었군
-	//PrintLine();
-
 	CheckFalse(StateComp->IsIdleMode());
+
+	FRotator temp;
+	CheckFalse(GetCursorLocationAndRotation(WarpLocation, temp));
+	//Todo. 캡슐 충돌체 절반 높이만큼 올려줘야 함(땅에 끼일 수가 있어서...)
 
 	StateComp->SetActionMode();
 	Datas[0].bCanMove ? StatusComp->SetMove() : StatusComp->SetStop();
@@ -44,6 +76,28 @@ void ACDoAction_Warp::End_DoAction()
 {
 	Super::End_DoAction();
 
+	OwnerCharacter->SetActorLocation(WarpLocation);
+
 	StateComp->SetIdleMode();
 	StatusComp->SetMove();
+}
+
+bool ACDoAction_Warp::GetCursorLocationAndRotation(FVector& OutLocation, FRotator& OutRotator)
+{
+	APlayerController* controller = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	CheckNullResult(controller, false);
+
+	TArray<TEnumAsByte<EObjectTypeQuery>> objectTypes;
+	objectTypes.Add(EObjectTypeQuery::ObjectTypeQuery1);
+	
+	FHitResult hitResult;
+	if (controller->GetHitResultUnderCursorForObjects(objectTypes, true, hitResult))
+	{
+		OutLocation = hitResult.Location;
+		OutRotator = hitResult.ImpactPoint.Rotation();
+
+		return true;
+	}
+
+	return false;
 }

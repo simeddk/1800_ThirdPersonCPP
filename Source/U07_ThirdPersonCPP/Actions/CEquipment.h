@@ -22,6 +22,7 @@ protected:
 public:
 	FORCEINLINE void SetData(const FEquipmentData& InData) { Data = InData; }
 	FORCEINLINE void SetColor(const FLinearColor& InColor) { Color = InColor; }
+	FORCEINLINE const bool* IsEquippedThis() { return &bEquippedThis; }
 
 public:
 	//Play Draw Montage
@@ -63,4 +64,5 @@ protected:
 private:
 	FEquipmentData Data;
 	FLinearColor Color;
+	bool bEquippedThis;
 };

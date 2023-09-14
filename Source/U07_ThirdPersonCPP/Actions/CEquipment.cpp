@@ -58,12 +58,16 @@ void ACEquipment::Begin_Equip_Implementation()
 
 void ACEquipment::End_Equip_Implementation()
 {
+	bEquippedThis = true;
+
 	StateComp->SetIdleMode();
 	StatusComp->SetMove();
 }
 
 void ACEquipment::Unequip_Implementation()
 {
+	bEquippedThis = false;
+
 	OwnerCharacter->bUseControllerRotationYaw = false;
 	OwnerCharacter->GetCharacterMovement()->bOrientRotationToMovement = true;
 

@@ -42,6 +42,11 @@ void UCActionData::BeginPlay(class ACharacter* InOwnerCharacter, UCActionData_Sp
 		DoAction->SetActorLabel(GetCustomActorLabel(InOwnerCharacter, "DoAction"));
 		UGameplayStatics::FinishSpawningActor(DoAction, transform);
 
+		if (!!Equipment)
+		{
+			DoAction->SetEquippedThis(Equipment->IsEquippedThis());
+		}
+
 		if (!!Attachment)
 		{
 			Attachment->OnBeginOverlap.AddDynamic(DoAction, &ACDoAction::OnBeginOverlap);
