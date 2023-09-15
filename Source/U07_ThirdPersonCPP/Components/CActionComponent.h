@@ -52,13 +52,13 @@ public: //Get Action
 		FORCEINLINE bool IsStormMode() { return Type == EActionType::Storm; }
 
 public: //SetAction
-	void SetUnarmedMode();
-	void SetFistMode();
-	void SetOneHandMode();
-	void SetTwoHandMode();
-	void SetMagicBallMode();
-	void SetWarpMode();
-	void SetStormMode();
+	UFUNCTION(BlueprintCallable) void SetUnarmedMode();
+	UFUNCTION(BlueprintCallable) void SetFistMode();
+	UFUNCTION(BlueprintCallable) void SetOneHandMode();
+	UFUNCTION(BlueprintCallable) void SetTwoHandMode();
+	UFUNCTION(BlueprintCallable) void SetMagicBallMode();
+	UFUNCTION(BlueprintCallable) void SetWarpMode();
+	UFUNCTION(BlueprintCallable) void SetStormMode();
 
 public:
 	void DoAction();

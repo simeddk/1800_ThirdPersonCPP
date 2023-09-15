@@ -31,8 +31,9 @@ void ACDoAction_Warp::Tick(float DeltaTime)
 	{
 		WarpPoint->SetVisibility(true);
 
-		WarpPoint->SetWorldLocation(location + FVector(0, 0, 120));
+		WarpPoint->SetWorldLocation(location + WarpPoint->GetUpVector() * 120.f);
 		WarpPoint->SetWorldRotation(rotation);
+
 	}
 	else
 	{
@@ -94,7 +95,12 @@ bool ACDoAction_Warp::GetCursorLocationAndRotation(FVector& OutLocation, FRotato
 	if (controller->GetHitResultUnderCursorForObjects(objectTypes, true, hitResult))
 	{
 		OutLocation = hitResult.Location;
-		OutRotator = hitResult.ImpactPoint.Rotation();
+
+		FVector normal = hitResult.ImpactNormal;
+		float pitch = -UKismetMathLibrary::DegAtan2(normal.X, normal.Z);
+		float roll = UKismetMathLibrary::DegAtan2(normal.Y, normal.Z);
+
+		OutRotator = FRotator(pitch, 0, roll);
 
 		return true;
 	}
