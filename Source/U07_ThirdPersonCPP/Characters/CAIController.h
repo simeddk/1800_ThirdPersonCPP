@@ -12,6 +12,8 @@ class U07_THIRDPERSONCPP_API ACAIController : public AAIController
 public:
 	ACAIController();
 
+	//Todo. TeamID ¼¼ÆÃ
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -22,5 +24,13 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
+	UPROPERTY(VisibleDefaultsOnly)
+		class UCBehaviorComponent* Behavior;
+
+	UPROPERTY(VisibleDefaultsOnly)
+		class UAIPerceptionComponent* Perception;
+
+private:
 	class ACEnemy_AI* PossessedEnemy;
+	class UAISenseConfig_Sight* Sight;
 };
