@@ -11,6 +11,7 @@ public class U07_ThirdPersonCPP : ModuleRules
 		PublicDependencyModuleNames.Add("Engine");
 		PublicDependencyModuleNames.Add("InputCore");
 		PublicDependencyModuleNames.Add("AIModule");
+		PublicDependencyModuleNames.Add("GameplayTasks");
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

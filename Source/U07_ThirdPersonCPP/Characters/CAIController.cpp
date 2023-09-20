@@ -6,6 +6,7 @@
 #include "Perception/AISenseConfig_Sight.h"
 #include "Components/CBehaviorComponent.h"
 #include "CEnemy_AI.h"
+#include "CPlayer.h"
 
 ACAIController::ACAIController()
 {
@@ -35,14 +36,19 @@ void ACAIController::OnPossess(APawn* InPawn)
 	PossessedEnemy = Cast<ACEnemy_AI>(InPawn);
 	UseBlackboard(PossessedEnemy->GetBehaviorTree()->BlackboardAsset, Blackboard);
 	
+	SetGenericTeamId(PossessedEnemy->GetTeamID());
 	Behavior->SetBlackboard(Blackboard);
 
 	RunBehaviorTree(PossessedEnemy->GetBehaviorTree());
+
+	Perception->OnPerceptionUpdated.AddDynamic(this, &ACAIController::OnPerceptionUpdated);
 }
 
 void ACAIController::OnUnPossess()
 {
 	Super::OnUnPossess();
+
+	Perception->OnPerceptionUpdated.Clear();
 }
 
 void ACAIController::BeginPlay()
@@ -53,4 +59,21 @@ void ACAIController::BeginPlay()
 void ACAIController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+void ACAIController::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
+{
+	TArray<AActor*> actros;
+	Perception->GetCurrentlyPerceivedActors(nullptr, actros);
+
+	ACPlayer* player = nullptr;
+	for (const auto& perceivedActor : actros)
+	{
+		player = Cast<ACPlayer>(perceivedActor);
+
+		if (!!player)
+			break;
+	}
+
+	Blackboard->SetValueAsObject("PlayerKey", player);
 }
