@@ -15,9 +15,6 @@ void UCBTService_Melee::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 {
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 
-	//플레이어가 감지가 됐을 때, 안 됐을 때
-	//감지가 됐을 때 거리에 따라서 BehaviorComp->SetOOOOMode
-
 	ACAIController* controller = Cast<ACAIController>(OwnerComp.GetOwner());
 	CheckNull(controller);
 
@@ -50,6 +47,20 @@ void UCBTService_Melee::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 	//Perceived Player
 	float distance = enemy->GetDistanceTo(player);
 
-	behaviorComp->SetApproachMode();
-	behaviorComp->SetActionMode();
+
+	//-> Is in Attack Range
+	if (distance < controller->GetBehaviorRange())
+	{
+		behaviorComp->SetActionMode();
+		return;
+	}
+
+	//-> Is in Sight Range
+	if (distance < controller->GetSightRadius())
+	{
+		behaviorComp->SetApproachMode();
+		return;
+	}
+	
+	
 }
