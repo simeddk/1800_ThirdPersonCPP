@@ -59,6 +59,12 @@ void ACAIController::BeginPlay()
 void ACAIController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	CheckFalse(bDrawDebug);
+
+	FVector center = PossessedEnemy->GetActorLocation();
+	DrawDebugSphere(GetWorld(), center, Sight->SightRadius, 30, FColor::Green);
+	DrawDebugSphere(GetWorld(), center, BehaviorRange, 30, FColor::Red);
 }
 
 float ACAIController::GetSightRadius()

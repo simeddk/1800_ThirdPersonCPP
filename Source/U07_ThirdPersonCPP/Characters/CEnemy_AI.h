@@ -10,8 +10,15 @@ class U07_THIRDPERSONCPP_API ACEnemy_AI : public ACEnemy
 	GENERATED_BODY()
 
 public:
+	ACEnemy_AI();
+
+public:
 	FORCEINLINE class UBehaviorTree* GetBehaviorTree() { return BehaviorTree; }
 	FORCEINLINE uint8 GetTeamID() { return TeamID; }
+
+private:
+	UPROPERTY(VisibleDefaultsOnly)
+		class UCPatrolComponent* Patrol;
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
