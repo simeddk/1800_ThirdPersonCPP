@@ -49,6 +49,7 @@ public:
 	void PlayRoll();
 	void PlayBackStep();
 	void PlayHitted();
+	void PlayDead();
 
 private:
 	void PlayAnimMontage(EStateType InStateType);

@@ -49,6 +49,11 @@ void UCMontagesComponent::PlayHitted()
 	PlayAnimMontage(EStateType::Hitted);
 }
 
+void UCMontagesComponent::PlayDead()
+{
+	PlayAnimMontage(EStateType::Dead);
+}
+
 void UCMontagesComponent::PlayAnimMontage(EStateType InStateType)
 {
 	ACharacter* ownerCharacter = Cast<ACharacter>(GetOwner());
@@ -58,5 +63,6 @@ void UCMontagesComponent::PlayAnimMontage(EStateType InStateType)
 
 	if (!!data && !!data->AnimMontage)
 		ownerCharacter->PlayAnimMontage(data->AnimMontage, data->PlayRate, data->StartSection);
+	//Todo. CanMove 처리가 없군...
 }
 

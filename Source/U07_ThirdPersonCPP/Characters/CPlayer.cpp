@@ -94,6 +94,26 @@ void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("Aim", EInputEvent::IE_Released, this, &ACPlayer::OffAim);
 }
 
+float ACPlayer::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	DamageValue = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+	Attacker = Cast<ACharacter>(EventInstigator->GetPawn());
+	Causer = DamageCauser;
+
+	Action->AbortByDamaged();
+	Status->DecreaseHealth(DamageValue);
+
+	if (Status->IsDead())
+	{
+		State->SetDeadMode();
+		return DamageValue;
+	}
+
+	State->SetHittedMode();
+
+	return DamageValue;
+}
+
 void ACPlayer::OnMoveForward(float InAxis)
 {
 	CheckTrue(FMath::IsNearlyZero(InAxis));
@@ -239,6 +259,35 @@ void ACPlayer::Begin_BackStep()
 	Montages->PlayBackStep();
 }
 
+void ACPlayer::Hitted()
+{
+	Montages->PlayHitted();
+}
+
+void ACPlayer::Dead()
+{
+	//Play Dead Montage
+	Montages->PlayDead();
+
+	//Off All Collisions
+	Action->OffAllCollisions();
+
+	//Destroy All(Attachment, Equipment, DoAction...)
+	UKismetSystemLibrary::K2_SetTimer(this, "End_Dead", 5.f, false);
+
+	//Todo. 충돌체를 "Spectator"
+	//플레이어가 사망하면 -> 적에게도 휴식을...
+	//이미 한번 죽었으면 여기 안들어와지게 체크
+}
+
+void ACPlayer::End_Dead()
+{
+	//Todo.. 뭐하지..
+	CLog::Print("You Died");
+
+	Action->End_Dead();
+}
+
 void ACPlayer::End_Roll()
 {
 	CheckNull(Action->GetCurrentDataAsset());
@@ -271,6 +320,8 @@ void ACPlayer::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType)
 	{
 		case EStateType::Roll:		Begin_Roll();		break;
 		case EStateType::BackStep:	Begin_BackStep();	break;
+		case EStateType::Hitted:	Hitted();			break;
+		case EStateType::Dead:		Dead();				break;
 	}
 }
 

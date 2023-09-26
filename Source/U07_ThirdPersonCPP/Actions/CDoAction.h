@@ -26,9 +26,11 @@ public:
 	virtual void DoAction() {}
 	virtual void Begin_DoAction() {}
 	virtual void End_DoAction() {}
+	virtual void Abort() {};
 
 	virtual void OnAim() {}
 	virtual void OffAim() {}
+
 
 public:
 	UFUNCTION()

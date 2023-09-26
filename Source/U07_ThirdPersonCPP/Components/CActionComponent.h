@@ -66,6 +66,9 @@ public:
 
 	void OffAllCollisions();
 
+	void AbortByDamaged();
+	void End_Dead();
+
 private:
 	void SetMode(EActionType InNewType);
 	void ChangeType(EActionType InNewType);
