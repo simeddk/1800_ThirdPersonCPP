@@ -53,10 +53,20 @@ void UCBTService_Melee::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 		behaviorComp->SetWaitMode();
 		return;
 	}
-
+	
 	//Perceived Player
-	float distance = enemy->GetDistanceTo(player);
+	UCStateComponent* playerStateComp = CHelpers::GetComponent<UCStateComponent>(player);
+	if (!!playerStateComp)
+	{
+		if (playerStateComp->IsDeadMode())
+		{
+			behaviorComp->SetWaitMode();
+			return;
+		}
+	}
 
+	//-> Get Distance to Player
+	float distance = enemy->GetDistanceTo(player);
 
 	//-> Is in Attack Range
 	if (distance < controller->GetBehaviorRange())

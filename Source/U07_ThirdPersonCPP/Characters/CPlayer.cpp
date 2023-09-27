@@ -4,6 +4,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Materials/MaterialInstanceDynamic.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/CStatusComponent.h"
 #include "Components/COptionComponent.h"
 #include "Components/CMontagesComponent.h"
@@ -266,18 +267,25 @@ void ACPlayer::Hitted()
 
 void ACPlayer::Dead()
 {
+	//Do Once
+	CheckFalse(State->IsDeadMode());
+
+	//Disable Input
+	APlayerController* controller = GetController<APlayerController>();
+	if (!!controller)
+		DisableInput(controller);
+
 	//Play Dead Montage
 	Montages->PlayDead();
 
 	//Off All Collisions
 	Action->OffAllCollisions();
+	GetCapsuleComponent()->SetCollisionProfileName("Spectator");
 
 	//Destroy All(Attachment, Equipment, DoAction...)
 	UKismetSystemLibrary::K2_SetTimer(this, "End_Dead", 5.f, false);
 
-	//Todo. 충돌체를 "Spectator"
-	//플레이어가 사망하면 -> 적에게도 휴식을...
-	//이미 한번 죽었으면 여기 안들어와지게 체크
+	
 }
 
 void ACPlayer::End_Dead()
