@@ -1,5 +1,6 @@
 #include "CSelectActionWidget_Icon.h"
 #include "Global.h"
+#include "Engine/Texture2D.h"
 #include "Components/Button.h"
 #include "Characters/CPlayer.h"
 #include "CSelectActionWidget_Group.h"
@@ -30,6 +31,14 @@ void UCSelectActionWidget_Icon::OnUnhover()
 {
 	CheckNull(GetParentWidget());
 	GetParentWidget()->Unhover(GetName());
+}
+
+void UCSelectActionWidget_Icon::SetTextureToImageButton(UTexture2D* InImage)
+{
+	CheckNull(ImageButton);
+	ImageButton->WidgetStyle.Normal.SetResourceObject(InImage);
+	ImageButton->WidgetStyle.Hovered.SetResourceObject(InImage);
+	ImageButton->WidgetStyle.Pressed.SetResourceObject(InImage);
 }
 
 UCSelectActionWidget_Group* UCSelectActionWidget_Icon::GetParentWidget()

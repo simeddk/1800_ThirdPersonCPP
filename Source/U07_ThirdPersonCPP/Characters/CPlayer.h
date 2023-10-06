@@ -39,12 +39,13 @@ private: //Action Event
 	void OnWalk();
 	void OffWalk();
 	void OnEvade();
-	void OnFist();
-	void OnOneHand();
-	void OnTwoHand();
-	void OnMagicBall();
-	void OnWarp();
-	void OnStrom();
+	
+	UFUNCTION() void OnFist();
+	UFUNCTION() void OnOneHand();
+	UFUNCTION() void OnTwoHand();
+	UFUNCTION() void OnMagicBall();
+	UFUNCTION() void OnWarp();
+	UFUNCTION() void OnStorm();
 
 	void OnAction();
 	void OnAim();

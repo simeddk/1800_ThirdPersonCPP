@@ -12,6 +12,7 @@
 #include "Actions/CActionData.h"
 #include "Widgets/CPlayerHealthWidget.h"
 #include "Widgets/CSelectActionWidget_Group.h"
+#include "Widgets/CSelectActionWidget_Icon.h"
 
 ACPlayer::ACPlayer()
 {
@@ -78,6 +79,15 @@ void ACPlayer::BeginPlay()
 	CheckNull(SelectActionWidget);
 	SelectActionWidget->AddToViewport();
 	SelectActionWidget->SetVisibility(ESlateVisibility::Hidden);
+
+	//Bind SelectAction Widget Event
+	SelectActionWidget->GetChildWidget("Icon1")->OnImageButtonPressed.AddDynamic(this, &ACPlayer::OnFist);
+	SelectActionWidget->GetChildWidget("Icon2")->OnImageButtonPressed.AddDynamic(this, &ACPlayer::OnOneHand);
+	SelectActionWidget->GetChildWidget("Icon3")->OnImageButtonPressed.AddDynamic(this, &ACPlayer::OnTwoHand);
+	SelectActionWidget->GetChildWidget("Icon4")->OnImageButtonPressed.AddDynamic(this, &ACPlayer::OnMagicBall);
+	SelectActionWidget->GetChildWidget("Icon5")->OnImageButtonPressed.AddDynamic(this, &ACPlayer::OnWarp);
+	SelectActionWidget->GetChildWidget("Icon6")->OnImageButtonPressed.AddDynamic(this, &ACPlayer::OnStorm);
+	
 }
 
 void ACPlayer::Tick(float DeltaTime)
@@ -106,7 +116,7 @@ void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("TwoHand", EInputEvent::IE_Pressed, this, &ACPlayer::OnTwoHand);
 	PlayerInputComponent->BindAction("MagicBall", EInputEvent::IE_Pressed, this, &ACPlayer::OnMagicBall);
 	PlayerInputComponent->BindAction("Warp", EInputEvent::IE_Pressed, this, &ACPlayer::OnWarp);
-	PlayerInputComponent->BindAction("Storm", EInputEvent::IE_Pressed, this, &ACPlayer::OnStrom);
+	PlayerInputComponent->BindAction("Storm", EInputEvent::IE_Pressed, this, &ACPlayer::OnStorm);
 	PlayerInputComponent->BindAction("Action", EInputEvent::IE_Pressed, this, &ACPlayer::OnAction);
 	PlayerInputComponent->BindAction("Aim", EInputEvent::IE_Pressed, this, &ACPlayer::OnAim);
 	PlayerInputComponent->BindAction("Aim", EInputEvent::IE_Released, this, &ACPlayer::OffAim);
@@ -237,7 +247,7 @@ void ACPlayer::OnWarp()
 	Action->SetWarpMode();
 }
 
-void ACPlayer::OnStrom()
+void ACPlayer::OnStorm()
 {
 	CheckFalse(State->IsIdleMode());
 
@@ -282,7 +292,6 @@ void ACPlayer::OffSelectAction()
 	GetController<APlayerController>()->SetInputMode(FInputModeGameOnly());
 
 	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.f);
-	//Todo. Pressed => ½ÇÁ¦ Action Changed;
 }
 
 void ACPlayer::Begin_Roll()
