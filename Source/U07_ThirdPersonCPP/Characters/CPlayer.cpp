@@ -9,6 +9,7 @@
 #include "Components/COptionComponent.h"
 #include "Components/CMontagesComponent.h"
 #include "Components/CActionComponent.h"
+#include "Components/CFeetComponent.h"
 #include "Actions/CActionData.h"
 #include "Widgets/CPlayerHealthWidget.h"
 #include "Widgets/CSelectActionWidget_Group.h"
@@ -28,6 +29,7 @@ ACPlayer::ACPlayer()
 	CHelpers::CreateActorComponent(this, &Status, "Status");
 	CHelpers::CreateActorComponent(this, &Option, "Option");
 	CHelpers::CreateActorComponent(this, &State, "State");
+	CHelpers::CreateActorComponent(this, &Feet, "Feet");
 
 	//Component Settings
 	//-> SkelMesh
