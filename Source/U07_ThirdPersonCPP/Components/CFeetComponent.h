@@ -46,7 +46,7 @@ public:
 	 FORCEINLINE const FFeetData& GetData() { return Data; }
 
 private:
-	void Trace(FName InSocketName, float& OutDistance);
+	void Trace(FName InSocketName, float& OutDistance, FRotator& OutRotation);
 
 protected:
 	UPROPERTY(EditAnywhere, Category = "IK")
@@ -63,6 +63,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "IK")
 		float AdjustHeight = 5.f;
+
+	UPROPERTY(EditAnywhere, Category = "IK")
+		float InterpSpeed = 5.f;
 
 private:
 	FFeetData Data;
